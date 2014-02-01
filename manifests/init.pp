@@ -62,7 +62,7 @@ inherits phpmyadmin::params
   #Default/basic apache config file for phpMyAdmin
   file { $apache_default_config:
     ensure  => $enabled ? {
-      'true'  => 'present',
+      'true'  => 'file',
       default => 'absent',
     },
     content => template('phpmyadmin/phpMyAdmin.conf.erb'),
