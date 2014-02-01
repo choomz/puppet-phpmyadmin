@@ -27,22 +27,32 @@
 # Copyright 2013 Justice London, unless otherwise noted.
 #
 class phpmyadmin (
-  $enabled          = 'true',
-  $ip_access_ranges = ["${::network_eth0}/${::netmask_eth0}"],
+  $enabled                = 'true',
+  $ip_access_ranges       = ["${::network_eth0}/${::netmask_eth0}"],
+  $package_name           = $phpmyadmin::params::package_name,
+  $apache_config_dir      = $phpmyadmin::params::apache_config_dir,
+  $site_enable_dir        = $phpmyadmin::params::site_enable_dir,
+  $apache_default_config  = $phpmyadmin::params::apache_default_config,
+  $config_file            = $phpmyadmin::params::config_file,
+  $doc_path               = $phpmyadmin::params::doc_path,
+  $data_dir               = $phpmyadmin::params::data_dir,
+  $apache_name            = $phpmyadmin::params::apache_name,
+  $preseed_package        = $phpmyadmin::params::preseed_package,
+  $comment_alias          = $phpmyadmin::params::comment_alias
 )
 inherits phpmyadmin::params
 {
-  if $phpmyadmin::params::preseed_package {
+  if $preseed_package {
     debconf::set_selection{ 'reconfigure-webserver':
       selection   => 'phpmyadmin/reconfigure-webserver',
       value_type  => 'multiselect',
       value       => 'apache2',
-      before      => Package[$phpmyadmin::params::package_name],
+      before      => Package[$package_name],
     }
   }
 
   #Install or remove package based on enable status
-  package { $phpmyadmin::params::package_name:
+  package { $package_name:
     ensure => $enabled ? {
       'true'  => 'present',
       default => 'absent',
@@ -50,14 +60,14 @@ inherits phpmyadmin::params
   }
 
   #Default/basic apache config file for phpMyAdmin
-  file { $phpmyadmin::params::apache_default_config:
+  file { $apache_default_config:
     ensure  => $enabled ? {
       'true'  => 'present',
       default => 'absent',
     },
     content => template('phpmyadmin/phpMyAdmin.conf.erb'),
-    require => Package[$phpmyadmin::params::package_name],
-    notify  => Service[$phpmyadmin::params::apache_name],
+    require => Package[$package_name],
+    notify  => Service[$apache_name],
   }
 
 }

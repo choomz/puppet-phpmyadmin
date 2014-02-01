@@ -15,6 +15,7 @@ class phpmyadmin::params
       $data_dir              = '/var/lib/phpMyAdmin'
       $apache_name           = 'httpd'
       $preseed_package       = false
+      $comment_alias         = false
     }
     /^(Debian|Ubuntu)$/: {
       $package_name          = 'phpmyadmin'
@@ -26,6 +27,7 @@ class phpmyadmin::params
       $data_dir              = '/var/lib/phpmyadmin'
       $apache_name           = 'apache2'
       $preseed_package       = true
+      $comment_alias         = false
     }
     default: { }
   }
